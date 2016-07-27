@@ -1,0 +1,80 @@
+package serviceImpl;
+
+import java.rmi.RemoteException;
+import service.ExecuteService;
+import java.util.ArrayList;
+
+public class ExecuteServiceImpl implements ExecuteService {
+	
+	private ArrayList<String> address = new ArrayList<String>();//代码
+	private ArrayList<Integer> cycle = new ArrayList<Integer>();//循环地址
+	private int position = 0;//循环指针
+	private int ptr = 0;//地址指针
+	
+	/**
+	 * 璇峰疄鐜拌鏂规硶
+	 */
+	public String execute(String code, String param) throws RemoteException {
+		String Co[] = code.split("");
+		String res = "";
+		int index = 0;
+		try{
+			for(int i = 0;i < Co.length;i++){
+			if(address.size() <= ptr){
+				char c = 0;	
+				address.add(String.valueOf(c));
+			}
+			switch(Co[i]){
+				case ">":{
+					ptr++;
+					break;
+				}
+				case "<":{
+					ptr--;
+					break;
+				}
+				case "+":{
+					char[] operate = address.get(ptr).toCharArray();
+					operate[0]++;
+					address.set(ptr, String.valueOf(operate[0]));
+					break;
+				}
+				case "-":{
+					char[] operate = address.get(ptr).toCharArray();
+					operate[0]--;
+					address.set(ptr, String.valueOf(operate[0]));
+					break;
+				}
+				case ".":{
+					String k = address.get(ptr);
+					res = res + k;
+					break;
+				}
+				case ",":{
+					address.set(ptr, param.substring(index, index+1));
+					index++;
+					break;
+				}
+				case "[":{
+					cycle.add(i);
+					position++;
+					break;
+				}
+				case "]":{
+					char[] local = address.get(ptr).toCharArray();
+					if(local[0] != 0){
+						i = cycle.get(position - 1);
+					}else{
+						cycle.remove(position-1);
+						position--;
+					}
+					break;
+				}	
+			}
+		}
+	}catch(Exception ex){
+		ex.printStackTrace();
+		}
+		return res;
+	}
+}
